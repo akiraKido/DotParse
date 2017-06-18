@@ -10,7 +10,7 @@ namespace DotParseTest
         [TestMethod]
         public void SeqTest()
         {
-            Parser<string, char?> testParser = Letter.Seq(Digit).Seq(Digit).Map(chars => new string(chars));
+            Parser<string, char?> testParser = Letter.Seq(Digit, Digit).Map(chars => new string(chars));
             
             testParser(new CharSource("abc")).AssertFailed(FailedReason.NotSatisfy);
             testParser(new CharSource("123")).AssertFailed(FailedReason.NotSatisfy);

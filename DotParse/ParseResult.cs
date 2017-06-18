@@ -1,11 +1,16 @@
-﻿namespace DotParse
+﻿using System;
+
+namespace DotParse
 {
     public abstract class ParseResult<TResult, TSource>
     {
         public ISource<TSource> Source { get; }
 
+        public virtual TResult Value => throw new InvalidOperationException();
+
         public abstract bool IsSuccess { get; }
         public abstract bool IsFailed { get; }
+        public virtual string Reason => throw new InvalidOperationException();
 
         protected ParseResult(ISource<TSource> source)
         {
@@ -15,13 +20,13 @@
 
     public class Success<TResult, TSource> : ParseResult<TResult, TSource>
     {
-        public TResult Value { get; }
-
         public Success(TResult value, ISource<TSource> source)
             : base(source)
         {
             this.Value = value;
         }
+
+        public override TResult Value { get; }
 
         public override bool IsSuccess => true;
         public override bool IsFailed => false;
@@ -35,7 +40,7 @@
             this.Reason = reason;
         }
 
-        public string Reason { get; }
+        public override string Reason { get; }
 
         public override bool IsSuccess => false;
         public override bool IsFailed => true;

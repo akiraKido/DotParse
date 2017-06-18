@@ -7,90 +7,70 @@ namespace DotParse
     public static class Combinators
     {
         public static Parser<TResult[], TSource> Seq<TResult, TSource>(this Parser<TResult, TSource> first,
-            Parser<TResult, TSource> second)
-            => source =>
+            params Parser<TResult, TSource>[] second)
+        {
+            Parser<TResult, TSource>[] parsers = new[] {first}.Concat(second).ToArray();
+            return source =>
             {
-                ParseResult<TResult, TSource> firstResult = first(source);
+                ParseResult<TResult, TSource>[] results = SeqInner(parsers, source).ToArray();
+                ParseResult<TResult, TSource> last = results[results.Length - 1];
 
-                if (firstResult is Success<TResult, TSource> firstSuccess)
+                return last.IsSuccess 
+                    ? last.Source.ToSuccess(results.Select(r => r.Value).ToArray()) 
+                    : last.Source.ToFailed<TResult[], TSource>(last.Reason);
+            };
+        }
+
+        public static Parser<TResult[], TSource> Repeat<TResult, TSource>(this Parser<TResult, TSource> parser,
+            int count)
+        {
+            if (count < 1)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            Parser<TResult, TSource>[] parsers = count == 1 ? new[] {parser} : Enumerable.Repeat(parser, count - 1).ToArray();
+
+            return parser.Seq(parsers);
+        }
+
+        private static IEnumerable<ParseResult<TResult, TSource>> SeqInner<TResult, TSource>(
+            Parser<TResult, TSource>[] parsers, ISource<TSource> source)
+        {
+            ParseResult<TResult, TSource> tmpResult = parsers[0](source);
+            yield return tmpResult;
+
+            for (var i = 1; i < parsers.Length; i++)
+            {
+                if (tmpResult.IsFailed)
                 {
-                    ParseResult<TResult, TSource> secondResult = second(firstResult.Source);
-
-                    if (secondResult is Success<TResult, TSource> secondSuccess)
-                    {
-                        return secondSuccess.Source.ToSuccess(new[] {firstSuccess.Value, secondSuccess.Value});
-                    }
-
-                    var secondFailed = secondResult as Failed<TResult, TSource>;
-                    return secondFailed.Source.ToFailed<TResult[], TSource>(secondFailed.Reason);
+                    yield break;
                 }
 
-                var firstFailed = firstResult as Failed<TResult, TSource>;
-                return firstFailed.Source.ToFailed<TResult[], TSource>(firstFailed.Reason);
-            };
+                tmpResult = parsers[i](tmpResult.Source);
+                yield return tmpResult;
+            }
+        }
 
         public static Parser<(TResultA a, TResultB b), TSource> SeqT<TResultA, TResultB, TSource>(
             this Parser<TResultA, TSource> first, Parser<TResultB, TSource> second)
             => source =>
             {
+                // try parse first
                 ParseResult<TResultA, TSource> firstResult = first(source);
-
-                if (firstResult is Success<TResultA, TSource> firstSuccess)
+                if (firstResult.IsFailed)
                 {
-                    ParseResult<TResultB, TSource> secondResult = second(firstResult.Source);
-
-                    if (secondResult is Success<TResultB, TSource> secondSuccess)
-                    {
-                        return secondSuccess.Source.ToSuccess<(TResultA a, TResultB b), TSource>((firstSuccess.Value, secondSuccess.Value));
-                    }
-
-                    var secondFailed = secondResult as Failed<TResultB, TSource>;
-                    return secondFailed.Source.ToFailed<(TResultA a, TResultB b), TSource>(secondFailed.Reason);
+                    return firstResult.Source.ToFailed<(TResultA a, TResultB b), TSource>(firstResult.Reason);
                 }
 
-                var firstFailed = firstResult as Failed<TResultA, TSource>;
-                return firstFailed.Source.ToFailed<(TResultA a, TResultB b), TSource>(firstFailed.Reason);
-            };
-
-        public static Parser<TResult[], TSource> Seq<TResult, TSource>(this Parser<TResult[], TSource> first,
-            Parser<TResult, TSource> second)
-            => source =>
-            {
-                ParseResult<TResult[], TSource> firstResult = first(source);
-
-                if (firstResult is Success<TResult[], TSource> firstSuccess)
+                // try parse second
+                ParseResult<TResultB, TSource> secondResult = second(firstResult.Source);
+                if (secondResult.IsFailed)
                 {
-                    ParseResult<TResult, TSource> secondResult = second(firstResult.Source);
-
-                    if (secondResult is Success<TResult, TSource> secondSuccess)
-                    {
-                        return secondSuccess.Source.ToSuccess(firstSuccess.Value.Concat(secondSuccess.Value).ToArray());
-                    }
-
-                    var secondFailed = secondResult as Failed<TResult, TSource>;
-                    return secondFailed.Source.ToFailed<TResult[], TSource>(secondFailed.Reason);
+                    return secondResult.Source.ToFailed<(TResultA a, TResultB b), TSource>(secondResult.Reason);
                 }
 
-                return firstResult as Failed<TResult[], TSource>;
-            };
-
-        public static Parser<TResult[], TSource> Repeat<TResult, TSource>(this Parser<TResult, TSource> parser,
-            int count)
-            => source =>
-            {
-                if (count < 1)
-                {
-                    throw new ArgumentOutOfRangeException();
-                }
-
-                Parser<TResult[], TSource> repeat = parser.Map(r => new[] {r});
-
-                for (var i = 1; i < count; i++)
-                {
-                    repeat = repeat.Seq(parser);
-                }
-
-                return repeat(source);
+                return secondResult.Source.ToSuccess((firstResult.Value, secondResult.Value));
             };
 
         public static Parser<TResultB, TSource> Map<TResultA, TResultB, TSource>(this Parser<TResultA, TSource> parser,
@@ -98,13 +78,11 @@ namespace DotParse
             => source =>
             {
                 ParseResult<TResultA, TSource> result = parser(source);
-                if (result is Success<TResultA, TSource> success)
+                if (result.IsFailed)
                 {
-                    return success.Source.ToSuccess(mapper(success.Value));
+                    return result.Source.ToFailed<TResultB, TSource>(result.Reason);
                 }
-
-                var failed = result as Failed<TResultA, TSource>;
-                return failed.Source.ToFailed<TResultB, TSource>(failed.Reason);
+                return result.Source.ToSuccess(mapper(result.Value));
             };
 
 
