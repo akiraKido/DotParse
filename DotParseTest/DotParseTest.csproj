@@ -8,7 +8,8 @@
     <TargetFramework>netcoreapp1.1</TargetFramework>    
     <ApplicationIcon />    
     <OutputTypeEx>library</OutputTypeEx>    
-    <StartupObject />
+    <StartupObject />    
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

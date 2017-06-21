@@ -1,7 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <AssemblyName>Revn.DotParse</AssemblyName>
+    <RootNamespace>Revn.DotParse</RootNamespace>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Description>Simple Parser Combinator for .NET Standard</Description>
+    <Version>0.0.1</Version>
+    <Copyright></Copyright>
+    <PackageLicenseUrl>https://github.com/revn-project/DotParse/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/revn-project</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/revn-project/DotParse</RepositoryUrl>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <TreatSpecificWarningsAsErrors />
+    <LangVersion>7</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
