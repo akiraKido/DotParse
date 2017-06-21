@@ -1,7 +1,7 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using DotParse;
-using static DotParse.Parsers.CharParsers;
+using Revn.DotParse;
+using static Revn.DotParse.Parsers.CharParsers;
 
 namespace Sample
 {

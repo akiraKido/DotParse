@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using DotParse;
+using Revn.DotParse;
 
 namespace DotParseTest
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DotParse
+namespace Revn.DotParse
 {
     public abstract class ParseResult<TResult, TSource>
     {

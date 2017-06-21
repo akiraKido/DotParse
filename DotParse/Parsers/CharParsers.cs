@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DotParse.Parsers
+namespace Revn.DotParse.Parsers
 {
     public static class CharParsers
     {

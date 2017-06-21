@@ -1,4 +1,4 @@
-﻿namespace DotParse
+﻿namespace Revn.DotParse
 {
     public interface ISource<out T>
     {

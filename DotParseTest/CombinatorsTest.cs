@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using static DotParse.Parsers.CharParsers;
-using DotParse;
+using static Revn.DotParse.Parsers.CharParsers;
+using Revn.DotParse;
 
 namespace DotParseTest
 {
