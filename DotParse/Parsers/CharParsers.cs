@@ -40,11 +40,11 @@ namespace Revn.DotParse.Parsers
         public static bool IsAlphaNum(char ch)
             => IsAlpha(ch) || char.IsNumber(ch);
 
-        public static Parser<char, char?> Digit = Satisfy(char.IsDigit);
-        public static Parser<char, char?> Upper = Satisfy(char.IsUpper);
-        public static Parser<char, char?> Lower = Satisfy(char.IsLower);
-        public static Parser<char, char?> Alpha = Satisfy(IsAlpha);
-        public static Parser<char, char?> AlphaNum = Satisfy(IsAlphaNum);
-        public static Parser<char, char?> Letter = Satisfy(char.IsLetter);
+        public static readonly Parser<char, char?> Digit = Satisfy(char.IsDigit);
+        public static readonly Parser<char, char?> Upper = Satisfy(char.IsUpper);
+        public static readonly Parser<char, char?> Lower = Satisfy(char.IsLower);
+        public static readonly Parser<char, char?> Alpha = Satisfy(IsAlpha);
+        public static readonly Parser<char, char?> AlphaNum = Satisfy(IsAlphaNum);
+        public static readonly Parser<char, char?> Letter = Satisfy(char.IsLetter);
     }
 }

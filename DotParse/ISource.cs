@@ -4,5 +4,6 @@
     {
         T Peek();
         ISource<T> ToNext();
+        ISource<T> ToNext(int count);
     }
 }
