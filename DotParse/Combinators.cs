@@ -39,6 +39,10 @@ namespace Revn.DotParse
                             var results = new List<TResult>();
 
                             ParseResult<TSource, TResult> parseResult = parser(source);
+                            if (parseResult.IsFailed)
+                            {
+                                return parseResult.Source.ToNotSatisfy<TSource, TResult[]>();
+                            }
 
                             while (parseResult.IsSuccess)
                             {
