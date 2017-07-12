@@ -10,16 +10,16 @@ namespace DotParseTest
             Assert.AreEqual(expected, actual);
         }
 
-        public static void AssertSuccess<TResult, TSource>(this ParseResult<TResult, TSource> result, TResult expected)
+        public static void AssertSuccess<TSource, TResult>(this ParseResult<TSource, TResult> result, TResult expected)
         {
             result.IsSuccess.Is(true);
-            (result as Success<TResult, TSource>).Value.Is(expected);
+            (result as Success<TSource, TResult>).Value.Is(expected);
         }
 
-        public static void AssertFailed<TResult, TSource>(this ParseResult<TResult, TSource> result, string reason)
+        public static void AssertFailed<TSource, TResult>(this ParseResult<TSource, TResult> result, string reason)
         {
             result.IsFailed.Is(true);
-            (result as Failed<TResult, TSource>).Reason.Is(reason);
+            (result as Failed<TSource, TResult>).Reason.Is(reason);
         }
     }
 }

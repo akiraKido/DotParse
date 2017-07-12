@@ -21,14 +21,14 @@ namespace Sample
     {
         private static readonly Func<char[], int> CharsToInt = chars => int.Parse(new string(chars));
 
-        private static readonly Parser<int, char?> RegionParser = Digit.Repeat(3).Map(CharsToInt);
-        private static readonly Parser<int, char?> OfficeParser = Digit.Repeat(4).Map(CharsToInt);
+        private static readonly Parser<char?, int> RegionParser = Digit.Repeat(3).Map(CharsToInt);
+        private static readonly Parser<char?, int> OfficeParser = Digit.Repeat(4).Map(CharsToInt);
 
         private static (TA a, TB b, TC c) Flatten<TA, TB, TC>(((TA _a, TB _b) ab, TC _c) tuple) =>
             (tuple.ab._a, tuple.ab._b, tuple._c);
 
 
-        private static Parser<PostalCode, char?> CodeParser =
+        private static Parser<char?, PostalCode> CodeParser =
             RegionParser
             .SeqT(Char('-'))
             .SeqT(OfficeParser)
@@ -36,7 +36,7 @@ namespace Sample
             .Map(t => new PostalCode(t.a, t.c));
 
         public static PostalCode Parse(string str)
-            => (CodeParser(new CharSource(str)) as Success<PostalCode, char?>)?.Value;
+            => (CodeParser(new CharSource(str)) as Success<char?, PostalCode>)?.Value;
     }
 
     internal class PostalCode

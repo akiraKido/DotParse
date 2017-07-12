@@ -10,7 +10,7 @@ namespace DotParseTest
         [TestMethod]
         public void SeqTest()
         {
-            Parser<string, char?> testParser = Letter.Seq(Digit, Digit).Map(chars => new string(chars));
+            Parser<char?, string> testParser = Letter.Seq(Digit, Digit).Map(chars => new string(chars));
             
             testParser(new CharSource("abc")).AssertFailed(FailedReason.NotSatisfy);
             testParser(new CharSource("123")).AssertFailed(FailedReason.NotSatisfy);
@@ -22,7 +22,7 @@ namespace DotParseTest
         [TestMethod]
         public void RepeatTest()
         {
-            Parser<string, char?> testParser = Letter.Repeat(3).Map(chars => new string(chars));
+            Parser<char?, string> testParser = Letter.Repeat(3).Map(chars => new string(chars));
             testParser(new CharSource("abc")).AssertSuccess("abc");
             testParser(new CharSource("123")).AssertFailed(FailedReason.NotSatisfy);
         }

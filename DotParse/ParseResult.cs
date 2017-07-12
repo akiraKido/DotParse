@@ -2,7 +2,7 @@
 
 namespace Revn.DotParse
 {
-    public abstract class ParseResult<TResult, TSource>
+    public abstract class ParseResult<TSource, TResult>
     {
         public ISource<TSource> Source { get; }
 
@@ -18,7 +18,7 @@ namespace Revn.DotParse
         }
     }
 
-    public class Success<TResult, TSource> : ParseResult<TResult, TSource>
+    public class Success<TSource, TResult> : ParseResult<TSource, TResult>
     {
         public Success(TResult value, ISource<TSource> source)
             : base(source)
@@ -32,7 +32,7 @@ namespace Revn.DotParse
         public override bool IsFailed => false;
     }
 
-    public class Failed<TResult, TSource> : ParseResult<TResult, TSource>
+    public class Failed<TSource, TResult> : ParseResult<TSource, TResult>
     {
         public Failed(ISource<TSource> source, string reason)
             : base(source)
@@ -54,14 +54,14 @@ namespace Revn.DotParse
 
     internal static class ParseResultExtensions
     {
-        public static ParseResult<TResult, TSource> ToFailed<TResult, TSource>(this ISource<TSource> source, string reason) => new Failed<TResult, TSource>(source, reason);
+        public static ParseResult<TSource, TResult> ToFailed<TSource, TResult>(this ISource<TSource> source, string reason) => new Failed<TSource, TResult>(source, reason);
 
-        public static ParseResult<TResult, TSource> ToEndOfSource<TResult, TSource>(this ISource<TSource> source) =>
-            source.ToFailed< TResult, TSource>(FailedReason.EndOfSource);
+        public static ParseResult<TSource, TResult> ToEndOfSource<TSource, TResult>(this ISource<TSource> source) =>
+            source.ToFailed< TSource, TResult>(FailedReason.EndOfSource);
 
-        public static ParseResult<TResult, TSource> ToNotSatisfy<TResult, TSource>(this ISource<TSource> source) =>
-            source.ToFailed<TResult, TSource>(FailedReason.NotSatisfy);
+        public static ParseResult<TSource, TResult> ToNotSatisfy<TSource, TResult>(this ISource<TSource> source) =>
+            source.ToFailed<TSource, TResult>(FailedReason.NotSatisfy);
 
-        public static ParseResult<TResult, TSource> ToSuccess<TResult, TSource>(this ISource<TSource> source, TResult value) => new Success<TResult, TSource>(value, source);
+        public static ParseResult<TSource, TResult> ToSuccess<TSource, TResult>(this ISource<TSource> source, TResult value) => new Success<TSource, TResult>(value, source);
     }
 }

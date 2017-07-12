@@ -85,15 +85,15 @@ namespace DotParseTest
             AssertFailed(AnyChar, "");
         }
 
-        private static void AssertSuccess(Parser<char, char?> parser, string source, char expected)
+        private static void AssertSuccess(Parser<char?, char> parser, string source, char expected)
         {
             var result = parser(new CharSource(source));
 
             result.IsSuccess.Is(true);
-            (result as Success<char, char?>).Value.Is(expected);
+            (result as Success<char?, char>).Value.Is(expected);
         }
 
-        private static void AssertFailed(Parser<char, char?> parser, string source)
+        private static void AssertFailed(Parser<char?, char> parser, string source)
         {
             parser(new CharSource(source)).IsFailed.Is(true);
         }

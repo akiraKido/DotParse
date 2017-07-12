@@ -3,5 +3,5 @@
     /// <summary>
     /// Parser
     /// </summary>
-    public delegate ParseResult<TResult, TSource> Parser<TResult, TSource>(ISource<TSource> source);
+    public delegate ParseResult<TSource, TResult> Parser<TSource, TResult>(ISource<TSource> source);
 }
