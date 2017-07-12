@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace Revn.DotParse.Parsers
 {
@@ -35,6 +36,14 @@ namespace Revn.DotParse.Parsers
         /// <returns></returns>
         public static Parser<char?, char> Char(char ch)
             => Satisfy(c => c == ch);
+
+        /// <summary>
+        /// どれか一文字に一致するパーサ
+        /// </summary>
+        /// <param name="ch"></param>
+        /// <returns></returns>
+        public static Parser<char?, char> Char(params char[] ch)
+            => Satisfy(ch.Contains);
 
         public static bool IsAlpha(char ch)
             => char.IsLower(ch) || char.IsUpper(ch);
