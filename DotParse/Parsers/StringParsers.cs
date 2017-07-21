@@ -41,7 +41,7 @@ namespace Revn.DotParse.Parsers
         /// <returns></returns>
         public static Parser<string, string> Skip(string literal)
             => Satisfy(str => (str.StartsWith(literal), string.Empty, literal.Length));
-
+        
         /// <summary>
         /// あらゆる文字列をうけつけるパーサ
         /// </summary>

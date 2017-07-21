@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Revn.DotParse
 {
@@ -52,6 +53,18 @@ namespace Revn.DotParse
 
                             return parseResult.Source.ToSuccess(results.ToArray());
                         };
+        }
+
+        public static Parser<TSource, TResult> Skip<TSource, TResult>( 
+            this Parser<TSource, TResult> parser, Func<TResult, bool> predicate )
+        {
+            return source =>
+            {
+                var result = parser( source );
+                return predicate( result.Value ) 
+                    ? result.Source.ToSuccess( default( TResult ) ) 
+                    : result;
+            };
         }
 
         public static Parser<TSource, TResult> Or<TSource, TResult>(this Parser<TSource, TResult> left, Parser<TSource, TResult> right)
