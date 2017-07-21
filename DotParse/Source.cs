@@ -52,7 +52,7 @@ namespace Revn.DotParse
 
         public string Peek()
         {
-            return _lines.Count < _line ? _lines[_line].Substring(_pos) : null;
+            return _line < _lines.Count ? _lines[_line].Substring(_pos) : null;
         }
 
         public ISource<string> ToNext()
