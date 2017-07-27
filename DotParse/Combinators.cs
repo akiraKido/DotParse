@@ -34,29 +34,6 @@ namespace Revn.DotParse
             return parser.Seq(parsers);
         }
 
-        public static Parser<TSource, TResult[]> Any<TSource, TResult>(this Parser<TSource, TResult> parser)
-            => source =>
-            {
-                ParseResult<TSource, TResult> result = parser(source);
-                if (result.IsFailed)
-                {
-                    return result.Source.ToSuccess(new TResult[] { });
-                }
-
-                var results = new List<TResult>();
-
-                while (result.IsSuccess)
-                {
-                    while (result.IsSuccess)
-                    {
-                        results.Add(result.Value);
-                        result = parser(result.Source);
-                    }
-                }
-
-                return result.Source.ToSuccess(results.ToArray());
-            };
-
         public static Parser<TSource, TResult[]> Many<TSource, TResult>(this Parser<TSource, TResult> parser)
         {
             return source =>
