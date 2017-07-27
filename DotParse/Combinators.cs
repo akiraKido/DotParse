@@ -44,10 +44,12 @@ namespace Revn.DotParse
                                 return parseResult.Source.ToNotSatisfy<TSource, TResult[]>();
                             }
 
-                            while (parseResult.IsSuccess)
+                            while (true)
                             {
                                 results.Add(parseResult.Value);
-                                parseResult = parser(parseResult.Source);
+                                var nextResult = parser(parseResult.Source);
+                                if (!nextResult.IsSuccess) break;
+                                parseResult = nextResult;
                             }
 
                             return parseResult.Source.ToSuccess(results.ToArray());
