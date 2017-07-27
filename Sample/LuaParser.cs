@@ -43,10 +43,9 @@ namespace Sample
 
         private static readonly Parser<string, LuaObject[]> LuaAssignmentExpression
             = Identifier
-                .SeqT(Char('='))
+                .SeqT(Char('=')).Map(item => item.a)
                 .SeqT(Literal)
-                .Map(Flatten)
-                .Map(item => new[] {new LuaAssignmentExpression(item.a, item.c[0]) as LuaObject});
+                .Map(item => new[] {new LuaAssignmentExpression(item.a, item.b[0]) as LuaObject});
 
         private static readonly Parser<string, LuaObject[]> Expression
             = LuaAssignmentExpression;
