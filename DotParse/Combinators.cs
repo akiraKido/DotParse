@@ -28,10 +28,34 @@ namespace Revn.DotParse
                 throw new ArgumentOutOfRangeException();
             }
 
-            Parser<TSource, TResult>[] parsers = count == 1 ? new[] {parser} : Enumerable.Repeat(parser, count - 1).ToArray();
+            Parser<TSource, TResult>[] parsers =
+                count == 1 ? new[] { parser } : Enumerable.Repeat(parser, count - 1).ToArray();
 
             return parser.Seq(parsers);
         }
+
+        public static Parser<TSource, TResult[]> Any<TSource, TResult>(this Parser<TSource, TResult> parser)
+            => source =>
+            {
+                ParseResult<TSource, TResult> result = parser(source);
+                if (result.IsFailed)
+                {
+                    return result.Source.ToSuccess(new TResult[] { });
+                }
+
+                var results = new List<TResult>();
+
+                while (result.IsSuccess)
+                {
+                    while (result.IsSuccess)
+                    {
+                        results.Add(result.Value);
+                        result = parser(result.Source);
+                    }
+                }
+
+                return result.Source.ToSuccess(results.ToArray());
+            };
 
         public static Parser<TSource, TResult[]> Many<TSource, TResult>(this Parser<TSource, TResult> parser)
         {
@@ -45,25 +69,45 @@ namespace Revn.DotParse
                                 return parseResult.Source.ToNotSatisfy<TSource, TResult[]>();
                             }
 
-                            while (parseResult.IsSuccess)
-                            {
-                                results.Add(parseResult.Value);
-                                parseResult = parser(parseResult.Source);
-                            }
+                while (true)
+                {
+                    results.Add(parseResult.Value);
+                    var nextResult = parser(parseResult.Source);
+                    if (!nextResult.IsSuccess) break;
+                    parseResult = nextResult;
+                }
 
                             return parseResult.Source.ToSuccess(results.ToArray());
                         };
         }
 
-        public static Parser<TSource, TResult> Skip<TSource, TResult>( 
-            this Parser<TSource, TResult> parser, Func<TResult, bool> predicate )
+        public static Parser<TSource, TResult> Skip<TSource, TResult>(
+            this Parser<TSource, TResult> parser, Parser<TSource, TResult> predicate)
         {
             return source =>
             {
-                var result = parser( source );
-                return predicate( result.Value ) 
-                    ? result.Source.ToSuccess( default( TResult ) ) 
-                    : result;
+                var result1 = parser(source);
+                if (result1.IsFailed) return result1.Source.ToFailed<TSource, TResult>(result1.Reason);
+
+                var predicateResult = predicate(source);
+                return predicateResult.IsSuccess
+                    ? result1.Source.ToSuccess(predicateResult.Value)
+                    : predicateResult.Source.ToFailed<TSource, TResult>(predicateResult.Reason);
+            };
+        }
+        
+        
+        public static Parser<TSource, TResult> SkipAll<TSource, TResult>(this Parser<TSource, TResult> parser)
+        {
+            return source =>
+            {
+                var result = parser(source);
+                while (result.IsSuccess)
+                {
+                    result = parser(result.Source);
+                }
+
+                return result.Source.ToSuccess(default(TResult));
             };
         }
 

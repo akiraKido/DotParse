@@ -31,33 +31,37 @@ namespace Revn.DotParse
 
     public class StringLineSource : ISource<string>
     {
-        private readonly IReadOnlyList<string> _lines;
+        protected readonly IReadOnlyList<string> Lines;
 
-        private readonly int _line;
-        private readonly int _pos;
+        protected readonly int Line;
+        protected readonly int Position;
 
         public StringLineSource(string text)
         {
-            _lines = text.SplitByLine().ToList().AsReadOnlyList();
-            _line = 0;
-            _pos = 0;
+            Lines = text.SplitByLine().ToList().AsReadOnlyList();
+            Line = 0;
+            Position = 0;
         }
 
-        private StringLineSource(IReadOnlyList<string> lines, int line, int pos)
+        protected StringLineSource(IReadOnlyList<string> lines, int line, int position)
         {
-            _lines = lines;
-            _line = line;
-            _pos = pos;
+            Lines = lines;
+            Line = line;
+            Position = position;
         }
 
-        public string Peek()
+        public virtual string Peek()
         {
-            return _line < _lines.Count ? _lines[_line].Substring(_pos) : null;
+            return Line < Lines.Count ? Lines[Line].Substring(Position) : null;
         }
 
-        public ISource<string> ToNext()
+        /// <summary>
+        /// 次の行に進みます
+        /// </summary>
+        /// <returns></returns>
+        public virtual ISource<string> ToNext()
         {
-            return new StringLineSource(_lines, _line + 1, 0);
+            return new StringLineSource(Lines, Line + 1, 0);
         }
 
         /// <summary>
@@ -65,11 +69,11 @@ namespace Revn.DotParse
         /// </summary>
         /// <param name="count">なん文字消費したか</param>
         /// <returns></returns>
-        public ISource<string> ToNext(int count)
+        public virtual ISource<string> ToNext(int count)
         {
-            return _pos + count < (_lines[_line].Length - 1)
-                ? new StringLineSource(_lines, _line, _pos + count)
-                : new StringLineSource(_lines, _line + 1, 0);
+            return Position + count < (Lines[Line].Length - 1)
+                ? new StringLineSource(Lines, Line, Position + count)
+                : new StringLineSource(Lines, Line + 1, 0);
         }
     }
 }
