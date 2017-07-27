@@ -37,12 +37,6 @@ namespace Sample
             = LuaNumber.Or(LuaString)
                 .Map(item => new[] {item});
 
-
-        private static readonly Parser<string, string> WhiteSpace
-            = Satisfy(s => (char.IsWhiteSpace(s[0]), string.Empty, char.IsWhiteSpace(s[0]) ? 1 : 0));
-
-        private static TA RemoveWhiteSpace<TA, TB>((TA _a, TB _b) ab) => ab._a;
-
         private static (TA a, TB b, TC c) Flatten<TA, TB, TC>(((TA _a, TB _b) ab, TC _c) tuple) =>
             (tuple.ab._a, tuple.ab._b, tuple._c);
 
