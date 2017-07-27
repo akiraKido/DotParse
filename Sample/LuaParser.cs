@@ -111,16 +111,6 @@ namespace Sample
         }
     }
 
-    internal class LuaCompilerHelper
-    {
-        internal object Value { get; }
-
-        internal LuaCompilerHelper(object value)
-        {
-            Value = value;
-        }
-    }
-
     internal class LuaString : LuaObject
     {
         internal LuaString(string value)
@@ -143,7 +133,7 @@ namespace Sample
         {
             Name = name;
             AssignmentObject = assignment;
-            _value = $"{name} = {assignment.ToString()}";
+            _value = $"{name} = {assignment}";
         }
 
         internal string Name { get; }
